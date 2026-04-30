@@ -3,125 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مصحف يوسف الشامل - جميع القراء</title>
+    <title>قرآن كريم - يوسف رمضان</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
-        :root { --main: #00796b; --gold: #d4af37; --bg: #f9f9f9; }
-        body { font-family: 'Tajawal', sans-serif; background: var(--bg); margin: 0; padding: 0; }
-        header { background: var(--main); color: white; padding: 25px; text-align: center; sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .search-container { padding: 20px; text-align: center; background: #fff; }
-        input { width: 80%; max-width: 500px; padding: 12px; border: 2px solid var(--main); border-radius: 25px; outline: none; font-size: 16px; }
-        .reciters-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 20px; max-width: 1200px; margin: auto; }
-        .reciter-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-right: 5px solid var(--gold); transition: 0.3s; cursor: pointer; }
-        .reciter-card:hover { transform: translateY(-5px); }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; overflow-y: auto; }
-        .modal-content { background: white; width: 90%; max-width: 600px; margin: 50px auto; border-radius: 15px; padding: 20px; position: relative; }
-        .close { position: absolute; left: 20px; top: 20px; font-size: 25px; cursor: pointer; color: red; }
-        .surah-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .surah-item { padding: 10px; background: #f0f0f0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: #333; font-size: 14px; }
-        .surah-item:hover { background: var(--main); color: white; }
-        #player-bar { position: fixed; bottom: 0; width: 100%; background: #333; color: white; padding: 10px; text-align: center; display: none; }
+        :root { --main: #0b5e56; --accent: #d4af37; --whatsapp: #25d366; }
+        body { font-family: 'Tajawal', sans-serif; background: #f0f2f5; margin: 0; padding-top: 60px; padding-bottom: 100px; }
+        
+        /* شريط التواصل العلوي المعدل */
+        .dev-banner {
+            background: #222; color: #fff; padding: 12px; text-align: center;
+            position: fixed; top: 0; width: 100%; z-index: 1001; font-size: 15px;
+            font-weight: bold; border-bottom: 2px solid var(--accent);
+        }
+
+        header { background: var(--main); color: white; padding: 40px 20px; text-align: center; }
+        header h1 { font-size: 45px; margin: 0; }
+
+        .whatsapp-btn {
+            background: var(--whatsapp); color: white; padding: 12px 25px;
+            border-radius: 30px; text-decoration: none; display: inline-block;
+            margin-top: 15px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .search-box { padding: 20px; text-align: center; }
+        input { width: 90%; max-width: 600px; padding: 15px; border: 2px solid var(--main); border-radius: 30px; font-size: 16px; outline: none; }
+        
+        .container { max-width: 1200px; margin: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; padding: 20px; }
+        .reciter-card { background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-bottom: 4px solid var(--accent); cursor: pointer; }
+        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; padding: 20px; }
+        .modal-content { background: white; max-width: 800px; margin: auto; border-radius: 20px; padding: 20px; height: 85vh; overflow-y: auto; position: relative; }
+        .close-btn { position: sticky; top: 0; background: red; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; float: left; }
+        .surah-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 50px; }
+        .surah-btn { background: #f8f9fa; padding: 12px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #ddd; }
+
+        .player-fixed { position: fixed; bottom: 0; width: 100%; background: white; border-top: 3px solid var(--accent); padding: 15px; text-align: center; z-index: 1000; }
         audio { width: 90%; max-width: 800px; }
     </style>
 </head>
 <body>
 
+<div class="dev-banner">
+    برمجة وتطوير يوسف رمضان للتواصل لعمل المواقع: 01092377837
+</div>
+
 <header>
-    <h1>مصحف يوسف الشامل</h1>
-    <p>استماع وتحميل لجميع قراء العالم الإسلامي</p>
+    <h1>قرآن كريم</h1>
+    <p>بإشراف المبرمج يوسف رمضان</p>
+    <a href="https://wa.me" target="_blank" class="whatsapp-btn">
+        تواصل معي عبر واتساب 💬
+    </a>
 </header>
 
-<div class="search-container">
-    <input type="text" id="searchInput" placeholder="ابحث عن اسم القارئ..." onkeyup="filterReciters()">
+<div class="search-box">
+    <input type="text" id="quranSearch" placeholder="ابحث عن اسم القارئ..." onkeyup="searchReciter()">
 </div>
 
-<div class="reciters-grid" id="recitersList">
-    <!-- القراء هيظهروا هنا -->
-</div>
+<div class="container" id="recitersGrid"></div>
 
-<!-- مودال السور -->
 <div id="surahModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <h2 id="modalTitle">اسم القارئ</h2>
-        <div class="surah-list" id="surahsContainer"></div>
+        <button class="close-btn" onclick="closeModal()">إغلاق ✕</button>
+        <h2 id="modalTitle" style="text-align: center;"></h2>
+        <div class="surah-list" id="surahLinks"></div>
     </div>
 </div>
 
-<div id="player-bar">
-    <div id="nowPlaying"></div>
-    <audio id="audioPlayer" controls autoplay></audio>
+<div class="player-fixed" id="playerBar" style="display: none;">
+    <strong id="trackTitle"></strong><br>
+    <audio id="mainAudio" controls autoplay></audio>
 </div>
 
 <script>
-    let allReciters = [];
-    
-    // 1. جلب كل القراء من API
-    async function getReciters() {
-        const res = await fetch('https://mp3quran.net');
-        const data = await res.json();
-        allReciters = data.reciters;
-        displayReciters(allReciters);
-    }
+    const reciters = [
+        { name: "مشاري راشد العفاسي", server: "https://mp3quran.net" },
+        { name: "عبد الباسط عبد الصمد", server: "https://mp3quran.net" },
+        { name: "ماهر المعيقلي", server: "https://mp3quran.net" },
+        { name: "ياسر الدوسري", server: "https://mp3quran.net" },
+        { name: "سعد الغامدي", server: "https://mp3quran.net" },
+        { name: "ناصر القطامي", server: "https://mp3quran.net" },
+        { name: "فارس عباد", server: "https://mp3quran.net" },
+        { name: "محمد صديق المنشاوي", server: "https://mp3quran.net" },
+        { name: "إدريس أبكر", server: "https://mp3quran.net" },
+        { name: "هزاع البلوشي", server: "https://mp3quran.net" }
+    ];
 
-    function displayReciters(list) {
-        const container = document.getElementById('recitersList');
-        container.innerHTML = list.map(r => `
-            <div class="reciter-card" onclick="showSurahs('${r.id}', '${r.name}', '${r.moshaf[0].server}', '${r.moshaf[0].surah_list}')">
+    const surahNames = ["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
+
+    function displayReciters(data) {
+        const grid = document.getElementById('recitersGrid');
+        grid.innerHTML = data.map(r => `
+            <div class="reciter-card" onclick="openSurahs('${r.name}', '${r.server}')">
                 <h3>${r.name}</h3>
-                <small>${r.moshaf[0].name}</small>
+                <p>المصحف المرتل</p>
             </div>
         `).join('');
     }
 
-    // 2. البحث
-    function filterReciters() {
-        const term = document.getElementById('searchInput').value.toLowerCase();
-        const filtered = allReciters.filter(r => r.name.toLowerCase().includes(term));
-        displayReciters(filtered);
-    }
-
-    // 3. عرض السور للقارئ المختار
-    async function showSurahs(id, name, server, surahList) {
+    function openSurahs(name, server) {
         document.getElementById('modalTitle').innerText = name;
-        const container = document.getElementById('surahsContainer');
-        container.innerHTML = 'جاري تحميل السور...';
-        document.getElementById('surahModal').style.display = 'block';
-
-        const surahArray = surahList.split(',');
-        // جلب أسماء السور
-        const res = await fetch('https://alquran.cloud');
-        const data = await res.json();
-        const surahNames = data.data;
-
-        container.innerHTML = surahArray.map(num => {
-            const sNum = num.padStart(3, '0');
-            const sName = surahNames[parseInt(num)-1].name;
-            const url = `${server}${sNum}.mp3`;
+        const list = document.getElementById('surahLinks');
+        list.innerHTML = surahNames.map((s, i) => {
+            const num = (i + 1).toString().padStart(3, '0');
+            const fileUrl = `${server}${num}.mp3`;
             return `
-                <div class="surah-item">
-                    <span>${sName}</span>
+                <div class="surah-btn">
+                    <span>${i+1}. ${s}</span>
                     <div>
-                        <button onclick="playAudio('${url}', '${name} - ${sName}')">▶️</button>
-                        <a href="${url}" download target="_blank">📥</a>
+                        <button onclick="playTrack('${fileUrl}', '${name} - ${s}')">▶️</button>
+                        <a href="${fileUrl}" download target="_blank">📥</a>
                     </div>
                 </div>
             `;
         }).join('');
+        document.getElementById('surahModal').style.display = 'block';
     }
 
-    function playAudio(url, title) {
-        const playerBar = document.getElementById('player-bar');
-        const player = document.getElementById('audioPlayer');
-        document.getElementById('nowPlaying').innerText = title;
-        player.src = url;
-        playerBar.style.display = 'block';
-        player.play();
+    function playTrack(url, title) {
+        const audio = document.getElementById('mainAudio');
+        document.getElementById('trackTitle').innerText = title;
+        document.getElementById('playerBar').style.display = 'block';
+        audio.src = url;
+        audio.play();
+    }
+
+    function searchReciter() {
+        const word = document.getElementById('quranSearch').value;
+        const filtered = reciters.filter(r => r.name.includes(word));
+        displayReciters(filtered);
     }
 
     function closeModal() { document.getElementById('surahModal').style.display = 'none'; }
-    
-    getReciters();
+    displayReciters(reciters);
 </script>
 
 </body>
