@@ -1,106 +1,105 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مصحف المهندس يوسف رمضان</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مصحف المهندس يوسف رمضان</title>
 
-    <style>
-        :root { --primary:#064e3b; --gold:#b45309; --light-gold:#fde68a; }
+<style>
+:root { --primary:#064e3b; --gold:#b45309; --light-gold:#fde68a; }
 
-        body { margin:0; font-family:Tahoma; background:#f3f4f6; }
+body { margin:0; font-family:Tahoma; background:#f3f4f6; }
 
-        header {
-            background:var(--primary);
-            color:var(--light-gold);
-            text-align:center;
-            padding:60px 20px;
-        }
+header {
+    background:var(--primary);
+    color:var(--light-gold);
+    text-align:center;
+    padding:60px 20px;
+}
 
-        header h1 {
-            font-size:60px;
-            font-family: 'Amiri', serif;
-        }
+header h1 {
+    font-size:60px;
+    font-family:'Amiri', serif;
+}
 
-        .search-area { text-align:center; margin-top:-30px; }
-        #searchInput {
-            width:80%; padding:15px;
-            border-radius:30px;
-            border:2px solid var(--gold);
-        }
+.search-area { text-align:center; margin-top:-30px; }
 
-        .container {
-            display:grid;
-            grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
-            gap:15px;
-            padding:20px;
-        }
+#searchInput {
+    width:80%;
+    padding:15px;
+    border-radius:30px;
+    border:2px solid var(--gold);
+}
 
-        .card {
-            background:#fff;
-            padding:20px;
-            border-radius:15px;
-            cursor:pointer;
-        }
+.container {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+    gap:15px;
+    padding:20px;
+}
 
-        .modal {
-            display:none;
-            position:fixed;
-            inset:0;
-            background:rgba(0,0,0,0.8);
-        }
+.card {
+    background:#fff;
+    padding:20px;
+    border-radius:15px;
+    cursor:pointer;
+}
 
-        .modal-content {
-            background:#fff;
-            width:90%;
-            height:90%;
-            margin:20px auto;
-            border-radius:20px;
-            overflow:auto;
-        }
+.modal {
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.8);
+}
 
-        .modal-header {
-            background:var(--primary);
-            color:#fff;
-            padding:15px;
-            display:flex;
-            justify-content:space-between;
-        }
+.modal-content {
+    background:#fff;
+    width:90%;
+    height:90%;
+    margin:20px auto;
+    border-radius:20px;
+    overflow:auto;
+}
 
-        .surah-item {
-            display:flex;
-            justify-content:space-between;
-            padding:10px;
-            border-bottom:1px solid #eee;
-        }
+.modal-header {
+    background:var(--primary);
+    color:#fff;
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+}
 
-        .player-fixed {
-            position:fixed;
-            bottom:0;
-            width:100%;
-            background:#fff;
-            padding:10px;
-            display:none;
-        }
+.surah-item {
+    display:flex;
+    justify-content:space-between;
+    padding:10px;
+    border-bottom:1px solid #eee;
+}
 
-        .footer-black {
-            background:#000;
-            color:#fff;
-            text-align:center;
-            padding:40px;
-        }
+.player-fixed {
+    position:fixed;
+    bottom:0;
+    width:100%;
+    background:#fff;
+    padding:10px;
+    display:none;
+}
 
-        button {
-            cursor:pointer;
-        }
-    </style>
+.footer-black {
+    background:#000;
+    color:#fff;
+    text-align:center;
+    padding:40px;
+}
+
+button { cursor:pointer; }
+</style>
 </head>
 
 <body>
 
 <header>
     <h1>القرآن الكريم</h1>
-    <p>بإشراف المهندس يوسف رمضان</p>
 </header>
 
 <div class="search-area">
@@ -109,58 +108,89 @@
 
 <div class="container" id="grid"></div>
 
+<!-- MODAL -->
 <div class="modal" id="modal">
-    <div class="modal-content">
+<div class="modal-content">
 
-        <div class="modal-header">
-            <h2 id="mName"></h2>
-            <button onclick="closeModal()">×</button>
-        </div>
-
-        <div style="padding:10px">
-
-            <button onclick="autoPlay=!autoPlay">
-                🔁 تشغيل تلقائي
-            </button>
-
-            <input id="ayahSearch" placeholder="ابحث داخل الآيات" oninput="searchAyah()" style="width:100%;padding:10px;margin-top:10px;">
-
-            <div id="tafseerBox">
-                <h3>📖 التفسير</h3>
-                <p id="tafseerText"></p>
-
-                <h3>🌍 الترجمة</h3>
-                <p id="translationText"></p>
-            </div>
-
-            <button id="zip">📥 تحميل المصحف كامل</button>
-
-            <div id="list"></div>
-
-        </div>
-
-    </div>
+<div class="modal-header">
+    <h2 id="mName"></h2>
+    <button onclick="closeModal()">×</button>
 </div>
 
+<div style="padding:10px">
+
+<button onclick="autoPlay=!autoPlay">🔁 تشغيل تلقائي</button>
+
+<input id="ayahSearch" placeholder="ابحث داخل الآيات"
+style="width:100%;padding:10px;margin-top:10px;">
+
+<!-- 🔥 BOT "اسألني" -->
+<div style="background:#f9fafb;padding:10px;margin-top:15px;border-radius:10px;">
+<h3>🤖 اسألني</h3>
+
+<input id="botQ" placeholder="اسأل عن آية أو معنى..."
+style="width:100%;padding:10px;border-radius:10px;">
+
+<button onclick="askMe()"
+style="margin-top:10px;padding:10px;background:var(--primary);color:#fff;border:none;">
+اسأل
+</button>
+
+<p id="botA" style="margin-top:10px;"></p>
+</div>
+
+<!-- التفسير -->
+<div>
+<h3>📖 التفسير</h3>
+<p id="tafseerText"></p>
+
+<button onclick="speakTafseer()">
+🎙️ سماع التفسير
+</button>
+
+<h3>🌍 الترجمة</h3>
+<p id="translationText"></p>
+</div>
+
+<button id="zip">📥 تحميل المصحف كامل</button>
+
+<div id="list"></div>
+
+</div>
+</div>
+</div>
+
+<!-- PLAYER -->
 <div class="player-fixed" id="player">
-    <div id="pTitle"></div>
+<div id="pTitle"></div>
 
-    <audio id="audio" controls style="width:100%"></audio>
+<audio id="audio" controls style="width:100%"></audio>
 
-    <button onclick="audio.play()">▶️</button>
-    <button onclick="audio.pause()">⏸</button>
+<button onclick="audio.play()">▶️</button>
+<button onclick="audio.pause()">⏸</button>
 
-    <select onchange="audio.playbackRate=this.value">
-        <option value="0.5">0.5x</option>
-        <option value="1" selected>1x</option>
-        <option value="1.5">1.5x</option>
-        <option value="2">2x</option>
-    </select>
+<select onchange="audio.playbackRate=this.value">
+<option value="0.5">0.5x</option>
+<option value="1" selected>1x</option>
+<option value="1.5">1.5x</option>
+<option value="2">2x</option>
+</select>
 </div>
 
+<!-- FOOTER -->
 <div class="footer-black">
-    <h3>برمجة المهندس يوسف رمضان</h3>
-    <p>واتساب للتواصل</p>
+
+<h3>برمجة وتطوير المهندس يوسف رمضان</h3>
+
+<p>للتواصل لعمل وتطوير المواقع والتطبيقات</p>
+
+<p>نعمل على تقديم أفضل الخدمات التقنية في مصر والوطن العربي</p>
+
+<a href="https://wa.me/201000000000"
+style="display:inline-block;margin-top:15px;padding:10px 20px;background:#25d366;color:#fff;border-radius:10px;text-decoration:none;">
+تواصل معي عبر واتساب 💬
+</a>
+
 </div>
 
 <script>
@@ -170,96 +200,105 @@ let currentList=[];
 let currentIndex=0;
 let currentServer="";
 let autoPlay=false;
+let currentTafseer="";
 
 const names=["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
 
 async function load(){
-    const r=await fetch('https://mp3quran.net/api/v3/reciters?language=ar');
-    const d=await r.json();
-    data=d.reciters;
-    show(data);
+const r=await fetch('https://mp3quran.net/api/v3/reciters?language=ar');
+const d=await r.json();
+data=d.reciters;
+show(data);
 }
 
 function show(l){
-    grid.innerHTML=l.map(r=>`
-        <div class="card" onclick="openS('${r.id}')">
-            <h3>${r.name}</h3>
-        </div>
-    `).join('');
+grid.innerHTML=l.map(r=>`
+<div class="card" onclick="openS('${r.id}')">
+<h3>${r.name}</h3>
+</div>`).join('');
 }
 
 function search(){
-    const t=searchInput.value.toLowerCase();
-    show(data.filter(r=>r.name.includes(t)));
+show(data.filter(r=>r.name.includes(searchInput.value)));
 }
 
 function openS(id){
-    const r=data.find(i=>i.id==id);
-    const m=r.moshaf[0];
+const r=data.find(i=>i.id==id);
+const m=r.moshaf[0];
 
-    currentList=m.surah_list.split(',');
-    currentServer=m.server;
+currentList=m.surah_list.split(',');
+currentServer=m.server;
 
-    mName.innerText=r.name;
+mName.innerText=r.name;
 
-    zip.onclick=()=>{
-        currentList.forEach((n,i)=>{
-            setTimeout(()=>{
-                let a=document.createElement('a');
-                a.href=`${currentServer}${n.padStart(3,'0')}.mp3`;
-                a.download='';
-                a.click();
-            },i*700);
-        });
-    };
+list.innerHTML=currentList.map((n,i)=>{
+const url=`${currentServer}${n.padStart(3,'0')}.mp3`;
+return `
+<div class="surah-item">
+<span>${names[n-1]}</span>
+<button onclick="playIndex(${i})">▶️</button>
+<a href="${url}" download>📥</a>
+</div>`;
+}).join('');
 
-    list.innerHTML=currentList.map((n,i)=>{
-        const url=`${currentServer}${n.padStart(3,'0')}.mp3`;
-        return `
-        <div class="surah-item">
-            <span>${names[n-1]}</span>
-            <button onclick="playIndex(${i})">▶️</button>
-            <a href="${url}" download>📥</a>
-        </div>`;
-    }).join('');
+modal.style.display='block';
 
-    modal.style.display='block';
-
-    loadTafseer(1);
+loadTafseer(1);
 }
 
 function playIndex(i){
-    currentIndex=i;
-    let n=currentList[i];
-    let url=`${currentServer}${n.padStart(3,'0')}.mp3`;
-
-    audio.src=url;
-    audio.play();
-
-    player.style.display='block';
+currentIndex=i;
+let n=currentList[i];
+audio.src=`${currentServer}${n.padStart(3,'0')}.mp3`;
+audio.play();
+player.style.display='block';
 }
 
 audio.onended=()=>{
-    if(autoPlay && currentIndex<currentList.length-1){
-        playIndex(currentIndex+1);
-    }
+if(autoPlay && currentIndex<currentList.length-1){
+playIndex(currentIndex+1);
+}
 };
 
-function closeModal(){
-    modal.style.display='none';
-}
-
+/* 📖 TAFSEER */
 async function loadTafseer(num){
-    try{
-        let r=await fetch(`https://api.alquran.cloud/v1/surah/${num}/ar.altafsir`);
-        let d=await r.json();
-        tafseerText.innerText=d.data.ayahs.map(a=>a.text).join(" ");
-    }catch{}
+let r=await fetch(`https://api.alquran.cloud/v1/surah/${num}/ar.altafsir`);
+let d=await r.json();
+currentTafseer=d.data.ayahs.map(a=>a.text).join(" ");
+tafseerText.innerText=currentTafseer;
 }
 
-function searchAyah(){
-    let q=ayahSearch.value;
-    if(!q) return;
+/* 🔊 صوت التفسير */
+function speakTafseer(){
+let msg=new SpeechSynthesisUtterance(currentTafseer);
+msg.lang="ar";
+speechSynthesis.speak(msg);
+}
+
+/* 🤖 اسألني */
+async function askMe(){
+let q=botQ.value;
+if(!q) return;
+
+botA.innerText="جاري البحث...";
+
+try{
+let r=await fetch(`https://api.alquran.cloud/v1/search/${q}/all/ar`);
+let d=await r.json();
+
+if(d.data.matches.length>0){
+botA.innerText=d.data.matches[0].text;
+}else{
+botA.innerText="لم يتم العثور على نتيجة";
+}
+
+}catch{
+botA.innerText="خطأ في الاتصال";
+}
+}
+
+function closeModal(){
+modal.style.display='none';
 }
 
 load();
