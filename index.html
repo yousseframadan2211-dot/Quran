@@ -3,66 +3,86 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>القرآن الكريم</title>
+<title>مصحف المهندس يوسف رمضان</title>
 
 <style>
-:root { --primary:#064e3b; --gold:#b45309; }
+:root { --primary:#064e3b; --gold:#b45309; --light-gold:#fde68a; }
 
 body { margin:0; font-family:Tahoma; background:#f3f4f6; }
 
 header {
     background:var(--primary);
-    color:#fff;
+    color:var(--light-gold);
     text-align:center;
-    padding:40px;
+    padding:60px 20px;
 }
 
-#viewer {
-    text-align:center;
-    margin:20px;
+header h1 {
+    font-size:60px;
+    font-family:'Amiri', serif;
 }
 
-#viewer img {
-    width:90%;
-    max-width:600px;
-    border-radius:10px;
-    transition:0.3s;
+.search-area { text-align:center; margin-top:-30px; }
+
+#searchInput {
+    width:80%;
+    padding:15px;
+    border-radius:30px;
+    border:2px solid var(--gold);
 }
 
-.controls {
-    text-align:center;
-    margin:10px;
+.container {
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+    gap:15px;
+    padding:20px;
 }
 
-button {
-    padding:10px;
-    margin:5px;
-    border:none;
-    background:var(--primary);
-    color:#fff;
-    border-radius:8px;
+.card {
+    background:#fff;
+    padding:20px;
+    border-radius:15px;
     cursor:pointer;
 }
 
-#ayahBox {
-    padding:15px;
-    line-height:2;
-    font-size:20px;
+.modal {
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.8);
 }
 
-.ayah {
-    padding:10px;
-    margin-bottom:5px;
-    border-bottom:1px solid #ddd;
+.modal-content {
+    background:#fff;
+    width:90%;
+    height:90%;
+    margin:20px auto;
+    border-radius:20px;
+    overflow:auto;
 }
 
-.active {
-    background:#fde68a;
-}
-
-.dark {
-    background:#111;
+.modal-header {
+    background:var(--primary);
     color:#fff;
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.surah-item {
+    display:flex;
+    justify-content:space-between;
+    padding:10px;
+    border-bottom:1px solid #eee;
+}
+
+.player-fixed {
+    position:fixed;
+    bottom:0;
+    width:100%;
+    background:#fff;
+    padding:10px;
+    display:none;
 }
 
 .footer-black {
@@ -71,164 +91,217 @@ button {
     text-align:center;
     padding:40px;
 }
+
+button { cursor:pointer; }
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>القرآن الكريم</h1>
+    <h1>القرآن الكريم</h1>
 </header>
 
-<div class="controls">
-<button onclick="prevPage()">⬅️</button>
-<span id="pageNum">1</span>
-<button onclick="nextPage()">➡️</button>
-
-<button onclick="toggleDark()">🌙</button>
-
-<select onchange="goToJuz(this.value)">
-<option>جزء</option>
-<option value="1">1</option>
-<option value="2">2</option>
-<option value="3">3</option>
-<option value="4">4</option>
-<option value="5">5</option>
-</select>
+<div class="search-area">
+    <input id="searchInput" onkeyup="search()" placeholder="ابحث عن قارئ">
 </div>
 
-<div id="viewer">
-<img id="pageImg">
+<div class="container" id="grid"></div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+<div class="modal-content">
+
+<div class="modal-header">
+    <h2 id="mName"></h2>
+    <button onclick="closeModal()">×</button>
 </div>
 
-<div id="ayahBox"></div>
+<div style="padding:10px">
+
+<button onclick="autoPlay=!autoPlay">🔁 تشغيل تلقائي</button>
+
+<input id="ayahSearch" placeholder="ابحث داخل الآيات"
+style="width:100%;padding:10px;margin-top:10px;">
+
+<!-- 🔥 BOT "اسألني" -->
+<div style="background:#f9fafb;padding:10px;margin-top:15px;border-radius:10px;">
+<h3>🤖 اسألني</h3>
+
+<input id="botQ" placeholder="اسأل عن آية أو معنى..."
+style="width:100%;padding:10px;border-radius:10px;">
+
+<button onclick="askMe()"
+style="margin-top:10px;padding:10px;background:var(--primary);color:#fff;border:none;">
+اسأل
+</button>
+
+<p id="botA" style="margin-top:10px;"></p>
+</div>
+
+<!-- التفسير -->
+<div>
+<h3>📖 التفسير</h3>
+<p id="tafseerText"></p>
+
+<button onclick="speakTafseer()">
+🎙️ سماع التفسير
+</button>
+
+<h3>🌍 الترجمة</h3>
+<p id="translationText"></p>
+</div>
+
+<button id="zip">📥 تحميل المصحف كامل</button>
+
+<div id="list"></div>
+
+</div>
+</div>
+</div>
+
+<!-- PLAYER -->
+<div class="player-fixed" id="player">
+<div id="pTitle"></div>
 
 <audio id="audio" controls style="width:100%"></audio>
 
+<button onclick="audio.play()">▶️</button>
+<button onclick="audio.pause()">⏸</button>
+
+<select onchange="audio.playbackRate=this.value">
+<option value="0.5">0.5x</option>
+<option value="1" selected>1x</option>
+<option value="1.5">1.5x</option>
+<option value="2">2x</option>
+</select>
+</div>
+
+<!-- FOOTER -->
 <div class="footer-black">
+
 <h3>برمجة وتطوير المهندس يوسف رمضان</h3>
+
 <p>للتواصل لعمل وتطوير المواقع والتطبيقات</p>
+
 <p>نعمل على تقديم أفضل الخدمات التقنية في مصر والوطن العربي</p>
-<a href="https://wa.me/201092377837"
-style="color:#fff;background:#25d366;padding:10px 20px;border-radius:10px;text-decoration:none;">
+
+<a href="https://wa.me/201000000000"
+style="display:inline-block;margin-top:15px;padding:10px 20px;background:#25d366;color:#fff;border-radius:10px;text-decoration:none;">
 تواصل معي عبر واتساب 💬
 </a>
+
 </div>
 
 <script>
 
-let page = 1;
-let ayat = [];
-let currentIndex = 0;
+let data=[];
+let currentList=[];
+let currentIndex=0;
+let currentServer="";
+let autoPlay=false;
+let currentTafseer="";
 
-/* 📖 تحميل صفحة */
-function loadPage(){
-    pageImg.src = `https://cdn.islamic.network/quran/images/${page}.png`;
-    pageNum.innerText = page;
+const names=["الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الانفطار","المطففين","الانشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
 
-    localStorage.setItem("page", page);
-
-    loadAyatByPage(page);
+async function load(){
+const r=await fetch('https://mp3quran.net/api/v3/reciters?language=ar');
+const d=await r.json();
+data=d.reciters;
+show(data);
 }
 
-/* ➡️⬅️ */
-function nextPage(){ if(page<604){page++; loadPage();} }
-function prevPage(){ if(page>1){page--; loadPage();} }
-
-/* 📖 ربط الصفحة بالآيات */
-async function loadAyatByPage(p){
-    let res = await fetch(`https://api.alquran.cloud/v1/page/${p}`);
-    let data = await res.json();
-
-    ayat = data.data.ayahs;
-
-    ayahBox.innerHTML = ayat.map((a,i)=>`
-        <div class="ayah" id="a-${i}">
-            ${a.text}
-            <br>
-            <button onclick="playAyah(${i})">▶️</button>
-            <button onclick="bookmark(${p},${i})">📌</button>
-        </div>
-    `).join('');
+function show(l){
+grid.innerHTML=l.map(r=>`
+<div class="card" onclick="openS('${r.id}')">
+<h3>${r.name}</h3>
+</div>`).join('');
 }
 
-/* 🔊 تشغيل */
-function playAyah(i){
-    currentIndex = i;
-
-    let a = ayat[i];
-    let s = a.surah.number;
-    let n = a.numberInSurah;
-
-    audio.src = `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${s}${n}.mp3`;
-    audio.play();
-
-    highlight(i);
+function search(){
+show(data.filter(r=>r.name.includes(searchInput.value)));
 }
 
-/* ✨ هايلايت */
-function highlight(i){
-    document.querySelectorAll('.ayah').forEach(e=>e.classList.remove("active"));
-    document.getElementById("a-"+i).classList.add("active");
+function openS(id){
+const r=data.find(i=>i.id==id);
+const m=r.moshaf[0];
+
+currentList=m.surah_list.split(',');
+currentServer=m.server;
+
+mName.innerText=r.name;
+
+list.innerHTML=currentList.map((n,i)=>{
+const url=`${currentServer}${n.padStart(3,'0')}.mp3`;
+return `
+<div class="surah-item">
+<span>${names[n-1]}</span>
+<button onclick="playIndex(${i})">▶️</button>
+<a href="${url}" download>📥</a>
+</div>`;
+}).join('');
+
+modal.style.display='block';
+
+loadTafseer(1);
 }
 
-/* 🔁 */
-audio.onended = ()=>{
-    if(currentIndex < ayat.length-1){
-        playAyah(currentIndex+1);
-    }
+function playIndex(i){
+currentIndex=i;
+let n=currentList[i];
+audio.src=`${currentServer}${n.padStart(3,'0')}.mp3`;
+audio.play();
+player.style.display='block';
+}
+
+audio.onended=()=>{
+if(autoPlay && currentIndex<currentList.length-1){
+playIndex(currentIndex+1);
+}
 };
 
-/* 📌 */
-function bookmark(p,i){
-    localStorage.setItem("bookmark", JSON.stringify({p,i}));
-    alert("تم الحفظ");
+/* 📖 TAFSEER */
+async function loadTafseer(num){
+let r=await fetch(`https://api.alquran.cloud/v1/surah/${num}/ar.altafsir`);
+let d=await r.json();
+currentTafseer=d.data.ayahs.map(a=>a.text).join(" ");
+tafseerText.innerText=currentTafseer;
 }
 
-/* 📌 تحميل */
-function loadBookmark(){
-    let b = JSON.parse(localStorage.getItem("bookmark"));
-    if(!b) return;
-
-    page = b.p;
-    loadPage();
-
-    setTimeout(()=>{
-        highlight(b.i);
-    },500);
+/* 🔊 صوت التفسير */
+function speakTafseer(){
+let msg=new SpeechSynthesisUtterance(currentTafseer);
+msg.lang="ar";
+speechSynthesis.speak(msg);
 }
 
-/* 📱 Swipe */
-let startX=0;
-pageImg.addEventListener("touchstart",e=>startX=e.touches[0].clientX);
-pageImg.addEventListener("touchend",e=>{
-    let endX=e.changedTouches[0].clientX;
-    if(endX<startX-50) nextPage();
-    else if(endX>startX+50) prevPage();
-});
+/* 🤖 اسألني */
+async function askMe(){
+let q=botQ.value;
+if(!q) return;
 
-/* 🌙 */
-function toggleDark(){
-    document.body.classList.toggle("dark");
+botA.innerText="جاري البحث...";
+
+try{
+let r=await fetch(`https://api.alquran.cloud/v1/search/${q}/all/ar`);
+let d=await r.json();
+
+if(d.data.matches.length>0){
+botA.innerText=d.data.matches[0].text;
+}else{
+botA.innerText="لم يتم العثور على نتيجة";
 }
 
-/* 📖 جزء */
-async function goToJuz(j){
-    let res = await fetch(`https://api.alquran.cloud/v1/juz/${j}`);
-    let data = await res.json();
-
-    ayat = data.data.ayahs;
-    ayahBox.innerHTML = ayat.map(a=>a.text).join("<br>");
+}catch{
+botA.innerText="خطأ في الاتصال";
+}
 }
 
-/* 🚀 */
-window.onload = ()=>{
-    let saved = localStorage.getItem("page");
-    if(saved) page = parseInt(saved);
+function closeModal(){
+modal.style.display='none';
+}
 
-    loadPage();
-    loadBookmark();
-};
+load();
 
 </script>
 
